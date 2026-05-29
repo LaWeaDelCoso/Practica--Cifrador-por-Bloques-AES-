@@ -14,10 +14,9 @@ def main() -> None:
     app.setApplicationName("AES App")
     app.setOrganizationName("Práctica Criptografía")
 
-    # Apply global stylesheet
+    # Aplica el estilo global
     app.setStyleSheet(STYLESHEET)
 
-    # Instantiate MVC components
     controller = AESController()
     window = MainView(controller)
     window.show()
