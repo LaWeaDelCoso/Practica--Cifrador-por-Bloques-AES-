@@ -1,3 +1,19 @@
+"""
+Implementación de AES en todos los modos de opeación aprovados por el NIST.
+
+Referencias:
+    FIPS 197: Especificación del algoritmo
+    NIST SP 800-38A: ECB, CBC, CFB, OFB, CTR
+    NIST SP 800-38D: GCM
+
+Convenciones para los archivos de cifrado:
+    Modos que requieren directamente un IV (CBC, CFB, OFB, CTR): IV || ciphertext
+    Modo GCM: nonce || ciphertext || tag (16 bytes)
+    Modo ECB: ciphertext
+
+El IV se pone antes del ciphertext por convención, lo que permite recuperarlo al descifrar sin necesidad de añadir metadata adicional.
+"""
+
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional
@@ -7,8 +23,7 @@ from Crypto.Random  import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 
 """
-Modos de operación que soporta AES de 
-acuerdo con NIST SP 800-38A/38D.
+Modos de operación que soporta AES de acuerdo con NIST SP 800-38A/38D.
 """
 class AESMode(Enum):
     ECB = "ECB"
@@ -184,7 +199,7 @@ class AESModel:
             return True, f"Archivo descifrado exitosamente con AES-{mode.value}."
 
         except ValueError as exc:
-            # Padding incorrecto o tag GCM inválido implican clave o modo incorrectos
-            return False, f"Error de integridad o clave incorrecta: {exc}"
+            # Padding incorrecto o tag GCM inválido implican llave o modo incorrectos
+            return False, f"Error de integridad o llave incorrecta: {exc}"
         except Exception as exc:
             return False, f"Error al descifrar: {exc}"

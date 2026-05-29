@@ -21,7 +21,7 @@ class AESController:
             filename = build_key_filename(get_timestamp())
             path = os.path.join(directory, filename)
             self._model.save_key(key, path)
-            return True, f"Llave guardada exitosamente:\n{path}"
+            return True, "Llave guardada exitosamente"
         except Exception as exc:
             return False, f"Error al generar la llave: {exc}"
         
@@ -63,7 +63,7 @@ class AESController:
         if not input_path or not os.path.isfile(input_path):
             return False, "Seleccione un archivo de entrada válido."
         if not key_path or not os.path.isfile(key_path):
-            return False, "Seleccione un archivo de clave válido."
+            return False, "Seleccione un archivo de llave válido."
 
         try:
             key = self._model.load_key(key_path)
@@ -77,7 +77,7 @@ class AESController:
         output_path = os.path.join(
             output_dir, build_encrypted_filename(input_path, mode.value)
         )
-        
+
         return self._model.encrypt_file(input_path, key, mode, iv_bytes, output_path)
 
     """Descifrar"""
@@ -93,7 +93,7 @@ class AESController:
         if not input_path or not os.path.isfile(input_path):
             return False, "Seleccione un archivo cifrado válido."
         if not key_path or not os.path.isfile(key_path):
-            return False, "Seleccione un archivo de clave válido."
+            return False, "Seleccione un archivo de llave válido."
 
         try:
             key = self._model.load_key(key_path)
@@ -105,3 +105,16 @@ class AESController:
         )
 
         return self._model.decrypt_file(input_path, key, mode, output_path)
+    
+    """Helpers para la vista"""
+    def get_modes(self) -> list[str]:
+        return [m.value for m in AESMode]
+
+    def get_iv_size_for_mode(self, mode_name: str) -> int:
+        return self._model.get_iv_size(AESMode(mode_name))
+
+    def mode_requires_iv(self, mode_name: str) -> bool:
+        return self._model.requires_iv(AESMode(mode_name))
+
+    def get_mode_description(self, mode_name: str) -> str:
+        return MODE_CONFIG[AESMode(mode_name)]["description"]
